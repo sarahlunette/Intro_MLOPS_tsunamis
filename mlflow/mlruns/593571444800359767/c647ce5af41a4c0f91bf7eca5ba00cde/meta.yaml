@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/sarahlenet/Desktop/IntroMLOPS/mlflow/mlruns/593571444800359767/c647ce5af41a4c0f91bf7eca5ba00cde/artifacts
+end_time: 1713863713965
+entry_point_name: ''
+experiment_id: '593571444800359767'
+lifecycle_stage: active
+run_id: c647ce5af41a4c0f91bf7eca5ba00cde
+run_name: run_medical
+run_uuid: c647ce5af41a4c0f91bf7eca5ba00cde
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1713863706088
+status: 3
+tags: []
+user_id: sarahlenet

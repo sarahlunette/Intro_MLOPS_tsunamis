@@ -1,0 +1,4 @@
+Vérifier que ../../data ça existe comme path
+Adapter les files
+Ajouter les bons github actions 
+Mettre ça sur le cloud avec cloud function

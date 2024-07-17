@@ -1,2 +1,2 @@
-# Intro_MLOPS_diabetes
+# Intro_MLOPS
  

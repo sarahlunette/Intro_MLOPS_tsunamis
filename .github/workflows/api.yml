@@ -1,0 +1,39 @@
+name: MLflow Model Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  mlflow_push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: IntroMLOPS
+      uses: actions/checkout@v2
+
+    - name: Find mlruns directory
+      id: find_mlruns
+      run: echo "::set-output name=mlruns_path::$(find . -type d -name 'mlruns' | tail -n 1)"
+    
+    - name: Extract run ID
+      id: extract_run_id
+      run: echo "::set-output name=run_id::$(basename $(dirname ${{ steps.find_mlruns.outputs.mlruns_path }}))"
+
+    - name: Copy model to serving API folder
+      run: |
+        mlruns_path="${{ steps.find_mlruns.outputs.mlruns_path }}"
+        run_id="${{ steps.extract_run_id.outputs.run_id }}"
+        latest_model=$(ls -td "$mlruns_path/$run_id/artifacts/model/"* | head -n 1)
+        cp -r "$latest_model" "/apps/model"
+
+    - name: Commit and push changes
+      uses: EndBug/add-and-commit@v7
+      with:
+        add: "/apps/model"
+        author_name: 'GitHub Actions'
+        author_email: 'actions@github.com'
+        message: 'Push MLflow model to serving API folder'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
