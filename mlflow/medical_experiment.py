@@ -10,21 +10,18 @@ from mlflow import MlflowClient
 import mlflow
 
 def run_mlflow_experiment():
-	medical_experiment = mlflow.set_experiment("Medical_experiment")
-	run_name = "run_medical"
+	medical_experiment = mlflow.set_experiment("tsunami_prediction_experiment")
+	run_name = "tsunami_prediction"
 	artifact_path = "models"
 	
 	# This will have to go into a separate file
-	df = pd.read_csv('../data/processed/diabetes.csv')
-	df.dropna(subset = 'Outcome', inplace = True)
-	df = df.fillna(df.mean()) # L'enlever quand on update
-	df.drop_duplicates(inplace = True) # L'enlever quand on update
+	df = pd.read_csv('../data/processed/humandamages.csv')
 	
 	from sklearn.preprocessing import StandardScaler
 	sc = StandardScaler()
 	
-	X = df.drop('Outcome', axis = 1)
-	y = df['Outcome']
+	X = df.drop('human_damages', axis = 1)
+	y = df['human_damages']
 	
 	from sklearn.model_selection import train_test_split
 	
@@ -37,7 +34,7 @@ def run_mlflow_experiment():
 	from sklearn.ensemble import RandomForestClassifier
 	from sklearn.model_selection import GridSearchCV
 	
-	names = ['RandomForest', 'LogisticRegression']
+	names = ['GradientBoostingRegressor', 'ElasticNet']
 	estimators = [RandomForestClassifier(), LogisticRegression()]
 	parameters = [{
 	            'n_estimators': [50, 100, 200],
