@@ -2,14 +2,41 @@
 import pandas as pd
 import numpy as np
 
-path = ''
+columns = [
+ 'month',
+ 'day',
+ 'country',
+ 'period',
+ 'latitude',
+ 'longitude',
+ 'runup_ht',
+ 'runup_ht_r',
+ 'runup_hori',
+ 'dist_from_',
+ 'hour',
+ 'cause_code',
+ 'event_vali',
+ 'eq_mag_unk',
+ 'eq_mag_mb',
+ 'eq_mag_ms',
+ 'eq_mag_mw',
+ 'eq_mag_mfa',
+ 'eq_magnitu',
+ 'eq_magni_1',
+ 'eq_depth',
+ 'max_event_',
+ 'ts_mt_ii',
+ 'ts_intensi',
+ 'num_runup',
+ 'num_slides',
+ 'map_slide_',
+ 'map_eq_id',
+ 'houses_damages', 
+ 'human_damages',
+]
 
-def import(path):
-	df = pd.read_csv(path + 'Historical_Tsunami_Event_Locations_with_Runups.csv')
-	return df
-
-def preprocess(path):
-	df = import(path)
+def preprocess(): #ajouter des arguments
+	df = pd.read_csv('Historical_Tsunami_Event_Locations_with_Runups.csv')
 	df.columns = df.columns.str.lower()
 
 	gdp_per_capita_dict = {
@@ -51,7 +78,7 @@ def preprocess(path):
 	 'cook islands': 'france', 'martinique (french territory)':'france'}
 
 	# We acquire the data and then rename the columns
-	gdp = pd.read_csv(path + 'gdp_per_capita.csv', on_bad_lines ='skip', sep = ',')
+	gdp = pd.read_csv('gdp_per_capita.csv', on_bad_lines ='skip', sep = ',')
 	gdp = gdp[['Country Name', '2022']].rename({'Country Name':'country', '2022':'gdp_per_capita'}, axis = 1)
 
 	# Then we convert all the values to lowercase
@@ -66,7 +93,7 @@ def preprocess(path):
 	data = df.merge(gdp, on = 'country', how = 'left')
 
 	# We do the same thing with population
-	population = pd.read_csv(path + 'countries-by-population-density-_-countries-by-density-2024.csv')
+	population = pd.read_csv('countries-by-population-density-_-countries-by-density-2024.csv')
 	population['country'] = population['country'].str.lower()
 	population['country'] = population['country'].replace(dict_replace)
 

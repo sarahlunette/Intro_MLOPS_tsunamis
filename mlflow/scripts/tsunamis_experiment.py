@@ -1,14 +1,21 @@
 import pandas as pd
 import numpy as np
 import sklearn
+from sklearn.manifold import TSNE
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.cluster import KMeans
 import mlflow
 from mlflow import MlflowClient
 from preprocessing import preprocess
 from scale import scale
 
-path = ''
+path = '' # get the csvs in preprocess(path)
+
+def add_noise(X, noise_level=0.001):
+    noise = np.random.normal(0, noise_level, X.shape)
+    return X + noise
 
 def predict_tsne(df, i, k):
   tsne = TSNE(n_components=2,perplexity=i, random_state=42)
@@ -42,7 +49,7 @@ def run_mlflow_experiment():
   run_name = 'tsunamis'
   artifact_path = 'models'
 
-  human_damages, houses_damages = preprocess(path) #rassembler les deux preprocessing dans un seul fichier
+  human_damages, houses_damages = preprocess() #rassembler les deux preprocessing dans un seul fichier
   human_damages_scaled, houses_damages_scaled = scale(human_damages, houses_damages)
 
   score = pd.DataFrame(columns = range(80), index = range(90))

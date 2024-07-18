@@ -1,5 +1,6 @@
 from sklearn.preprocessing import StandardScaler
-
+import pandas as pd
+from sklearn.manifold import TSNE
 def scale(human_damages, houses_damages):
 	sc1 = StandardScaler()
 	sc2 = StandardScaler()
