@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from predict import predict_record
 from pydantic import BaseModel
+import pickle as pkl
 
 
 api = FastAPI()
@@ -8,7 +9,13 @@ api = FastAPI()
 import pandas as pd
 import pickle as pkl
 
-model = pkl.load(open('model/model.pkl', 'rb'))
+# Load the model
+try:
+    with open('model/model.pkl', 'rb') as model_file:
+        model = pkl.load(model_file)
+except FileNotFoundError:
+    raise FileNotFoundError("Model file not found. Please check the file path.")
+
 
 class InputData(BaseModel):
   month : int
@@ -96,28 +103,28 @@ async def predict(input_data:InputData):
   # Change the country name key
   country = 'country_' + input_data.country
   data = input_data.dict()
-  data[country] = data[input_data.country]
+  data_dict[country_column] = 1  # Set the corresponding country column to 1
   del data[input_data.country]
 
-  ## Convert the entire record to a pandas Series
-  # Change the values to lists of values
-  for key in data.keys():
-    data[key] = [data[key]] # You have to remove country from this
+  # Create a DataFrame with the input data
+  record = pd.DataFrame.from_dict(data_dict)
 
-  ## create the dataframe for predictions
-  record_predict = pd.DataFrame(columns = columns_final, index = [0])
-  # Fill the values with the user input
-  record_predict[record.columns] = record
-  # Fill the rest with 0 because they are not in these countries
-  record_predict.fillna(0, inplace = True) # That is correct only if the other values are nan
+  # Ensure all columns are present, filling missing columns with 0
+  record = record.reindex(columns=columns_final, fill_value=0)
 
-  ## TO-DO: Add KMeans for filling clustering column and the rest
-
+  ## TO-DO: Add KMeans for filling clustering column and the rest (save Kmeans and load model)
+  km = joblib.load('Kmean.joblib')
+  record['clustering'] = km.predict(record).labels_
+  
   print(record)
   print(record.shape)
-  result = predict_record(record, model)
-  return {"prediction": str(result)}
-  
+  try:
+        prediction = model.predict(record)
+        # Assuming predict_record function is not needed if model.predict() works directly
+        # result = predict_record(record, model)
+        return {"prediction": str(prediction)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to make prediction: {str(e)}")
 
 
   
