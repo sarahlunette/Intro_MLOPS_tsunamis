@@ -2,26 +2,19 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime
 import git
+from preprocessing import preprocess
 
-from mlflow.medical_experiment import run_mlflow_experiment
+from mlflow.tsunamis_experiment import run_mlflow_experiment
 
 
 # Import your function from another file
-from cleaning import cleaning
-from preprocessing import train_test, scaler
-
-def loading(path):
-    df = pd.read_csv(path)
-    return df
+from preprocessing import preprocess
     
-def cleaning_(df):
-    return cleaning(df)
-
-def preprocessing_(df):
+def preprocessing_(path):
     return preprocessing(df)
 
 def save(df):
-    df.to_csv('../../data/processed/diabetes.csv')
+    df.to_csv('../../data/preprocessed.csv')
 
 # Define your DAG
 dag = DAG(
@@ -30,25 +23,12 @@ dag = DAG(
     schedule_interval='@daily',
 )
 
-# Define your Airflow task
 task1 = PythonOperator(
-    task_id='loading',
-    python_callable=loading,  # Call the function from the imported file
-    dag=dag,
-)
-
-task2 = PythonOperator(
-    task_id='cleaning',
-    python_callable=cleaning,
-    dag=dag,
-)
-
-task3 = PythonOperator(
     task_id='preprocessing',
     python_callable=preprocessing,
     dag=dag,
 )
-task4 = PythonOperator(
+task2 = PythonOperator(
     task_id='saving_csv',
     python_callable=save,
     dag=dag,
@@ -77,4 +57,4 @@ mlflow_task = PythonOperator(
 
 # check que le modèle a été enregistré dans mlflow/mlruns/
 
-task1 >> task2 >> task3 >> task4 >> check_file_task (#si ça passe) mlflow_task
+task1 >> task2 >> check_file_task >> mlflow_task
