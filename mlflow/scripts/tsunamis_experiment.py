@@ -40,7 +40,7 @@ def predict_tsne(df, i, k):
 def run_mlflow_experiment():
   tsunamis_experiment = mflow.set_experiment('tsunamis_experiment')
   run_name = 'tsunamis'
-  artifcat_path = 'models'
+  artifact_path = 'models'
 
   human_damages, houses_damages = preprocess(path) #rassembler les deux preprocessing dans un seul fichier
   human_damages_scaled, houses_damages_scaled = scale(human_damages, houses_damages)
@@ -52,13 +52,14 @@ def run_mlflow_experiment():
       score.iloc[k-1, i-1] = r2
 
   best_n = np.argmax(np.array(score.values))
-  print('Best number of clusters', best_n, 'Best score', score[best_n])
+  print('Best number of clusters', best_n, 'Best score', score.iloc[best_n[0], best_n[1]])
 
- gbr, r2 = predict_tsne(human_damages_scaled, best_n[1], best_n[0])
+  gbr, r2 = predict_tsne(human_damages_scaled, best_n[1] + 1 , best_n[0] + 1)
 
   with mlflow.start_run(run_name = run_name) as run:
+      mlflow.log_metrics(r2)
+      mlflow.log_params({'perplexity' : str(best_n[1] + 1), 'n_neighbors' : str(best_n[0] + 1)})
       mlflow.set_tag("mlflow.runName", run_name)
-      mlflow.sklearn.log_model(model = , artifcat_path = artifcat_path)
-
+      mlflow.sklearn.log_model(model = gbr, artifact_path = artifact_path)
 
   run_mlflow_experiment()
