@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from predict import predict_record
 from pydantic import BaseModel
 import pickle as pkl
+import numpy as np
+from sklearn.neighbors import NearestNeighbors
 
 
 api = FastAPI()
@@ -15,6 +17,30 @@ try:
         model = pkl.load(model_file)
 except FileNotFoundError:
     raise FileNotFoundError("Model file not found. Please check the file path.")
+
+# Load the KMeans
+try:
+    with open('model/kmeans_model.pkl', 'rb') as model_file:
+        km = pkl.load(model_file)
+except FileNotFoundError:
+    raise FileNotFoundError("Model file not found. Please check the file path.")
+
+# Load the TSNE
+try:
+    with open('model/tsne.pkl', 'rb') as model_file:
+        tsne_model = pkl.load(model_file)
+except FileNotFoundError:
+    raise FileNotFoundError("Model file not found. Please check the file path.")
+
+X_tsne = np.load('tsne_embeddings.npy')
+
+# Function to transform new data based on the saved TSNE model
+def transform_new_data(tsne_model, X_tsne, new_data):
+    # Use nearest neighbors to find the closest points in the original space
+    nbrs = NearestNeighbors(n_neighbors=1).fit(tsne_model.embedding_)
+    distances, indices = nbrs.kneighbors(new_data)
+    transformed_data = X_tsne[indices.flatten()]
+    return transformed_data
 
 
 class InputData(BaseModel):
@@ -99,32 +125,34 @@ columns_final = ['month', 'day', 'period', 'latitude', 'longitude', 'runup_ht',
 
 @api.post('/predict/')
 async def predict(input_data:InputData):
+    # Change the country name key
+    country = 'country_' + input_data.country
+    print(input_data.country)
+    data = input_data.dict()
+    print(data)
+    del data['country']
+    for key in data.keys():
+        data[key] = [data[key]]
+    data[country] = 1  # Set the corresponding country column to 1
 
-  # Change the country name key
-  country = 'country_' + input_data.country
-  data = input_data.dict()
-  data_dict[country_column] = 1  # Set the corresponding country column to 1
-  del data[input_data.country]
+    # Create a DataFrame with the input data
+    record = pd.DataFrame.from_dict(data)
 
-  # Create a DataFrame with the input data
-  record = pd.DataFrame.from_dict(data_dict)
+    # Ensure all columns are present, filling missing columns with 0
+    record = record.reindex(columns=columns_final, fill_value=0)
 
-  # Ensure all columns are present, filling missing columns with 0
-  record = record.reindex(columns=columns_final, fill_value=0)
+    # Add KMeans for filling clustering column and the rest (save Kmeans and load model)
+    record['clustering'] = km.predict(transform_new_data(tsne, X_tsne, record)).labels_
 
-  ## TO-DO: Add KMeans for filling clustering column and the rest (save Kmeans and load model)
-  km = joblib.load('Kmean.joblib')
-  record['clustering'] = km.predict(record).labels_
-  
-  print(record)
-  print(record.shape)
-  try:
+    print(record)
+    print(record.shape)
+
+    try:
         prediction = model.predict(record)
         # Assuming predict_record function is not needed if model.predict() works directly
         # result = predict_record(record, model)
         return {"prediction": str(prediction)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to make prediction: {str(e)}")
-
 
   

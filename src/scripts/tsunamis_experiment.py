@@ -44,13 +44,13 @@ def predict_tsne(df, i, k):
   y_pred = gbr.predict(X_test)
   mse = mean_squared_error(y_test, y_pred)
   r2 = r2_score(y_test, y_pred)
-  return km, gbr, r2
-  
+  return gbr, r2
 
 
 # experiment on best model with parameters perplexity and n_neigbors (we could also go up 80/90 if number of records went up)
 def run_mlflow_experiment():
-  tsunamis_experiment = mflow.set_experiment('tsunamis_experiment_perplexity_n_neighbors')
+  tsunamis_experiment = mflow.set_experiment('tsunamis_experiment')
+  run_name = 'tsunamis'
   artifact_path = 'models'
 
   human_damages, houses_damages = preprocess() #rassembler les deux preprocessing dans un seul fichier
@@ -59,26 +59,21 @@ def run_mlflow_experiment():
   score = pd.DataFrame(columns = range(80), index = range(90))
   for k in range(90):
     for i in range(80):
-      run_name = f"tsunamis_n_perplexity_{str(i + 1)}_n_clusters_{str(k + 1)}"
-      with mlflow.start_run(run_name = run_name) as run:
-        km, gbr,r2 = predict_tsne(human_damages_scaled, i, k)
-        score.iloc[k, i] = r2
-        mlflow.log_metrics(r2)
-        mlflow.log_params({'perplexity' : i + 1, 'n_neighbors' : k + 1})
-        mlflow.set_tag("mlflow.runName", run_name)
-        mlflow.log_model(model = km)
-        mlflow.sklearn.log_model(model = gbr, artifact_path = artifact_path)
+      gbr,r2 = predict_tsne(human_damages_scaled, i, k)
+      score.iloc[k, i] = r2
 
-  run_name = f"tsunamis_best_p"
+  
+
+  max_value = score.values.max()
+  flat_index = score.values.argmax()
+  row_index, col_index = np.unravel_index(flat_index, score.shape)
+  gbr, r2 = predict_tsne(human_damages_scaled, col_index + 1, row_index + 1)
+  
+
   with mlflow.start_run(run_name = run_name) as run:
-    max_value = score.values.max()
-    flat_index = score.values.argmax()
-    row_index, col_index = np.unravel_index(flat_index, score.shape)
-    gbr, r2 = predict_tsne(human_damages_scaled, col_index + 1, row_index + 1)
+      mlflow.log_metrics(r2)
+      mlflow.log_params({'perplexity' : col_index + 1, 'n_neighbors' : row_index  1)})
+      mlflow.set_tag("mlflow.runName", run_name)
+      mlflow.sklearn.log_model(model = gbr, artifact_path = artifact_path)
 
-    mlflow.log_metrics(r2)
-    mlflow.log_params({'perplexity' : col_index + 1, 'n_neighbors' : row_index + 1})
-    mlflow.set_tag("mlflow.runName", run_name)
-    mlflow.sklearn.log_model(model = gbr, artifact_path = artifact_path)
-
-run_mlflow_experiment()
+  run_mlflow_experiment()
