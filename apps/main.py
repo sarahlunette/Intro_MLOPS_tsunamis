@@ -115,9 +115,9 @@ async def predict(input_data:InputData):
 
     # Create a DataFrame with the input data
     record = preprocess(pd.DataFrame(data, index = [0]))
-
+    print(len(record.columns))
     # Ensure all columns are present, filling missing columns with 0
-    record = record.reindex(columns=columns, fill_value=0)
+    record = record.reindex(fill_value=0)
 
     # Add KMeans for filling clustering column and the rest (save Kmeans and load model)
     record['clustering'] = 0

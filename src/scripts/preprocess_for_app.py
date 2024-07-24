@@ -31,7 +31,27 @@ columns = [
  'num_slides',
  'map_slide_',
  'map_eq_id',
+ 'gdp_per_capita'
 ]
+
+countries = ['country_bangladesh', 'country_canada', 'country_chile',
+       'country_china', 'country_colombia', 'country_costa rica',
+       'country_dominican republic', 'country_ecuador', 'country_egypt',
+       'country_el salvador', 'country_fiji', 'country_france',
+       'country_french polynesia', 'country_greece', 'country_haiti',
+       'country_india', 'country_indonesia', 'country_italy',
+       'country_jamaica', 'country_japan', 'country_kenya',
+       'country_madagascar', 'country_malaysia', 'country_maldives',
+       'country_mexico', 'country_micronesia', 'country_myanmar',
+       'country_new caledonia', 'country_new zealand', 'country_nicaragua',
+       'country_norway', 'country_pakistan', 'country_panama',
+       'country_papua new guinea', 'country_peru', 'country_philippines',
+       'country_portugal', 'country_russia', 'country_samoa',
+       'country_solomon islands', 'country_somalia', 'country_south korea',
+       'country_spain', 'country_sri lanka', 'country_taiwan',
+       'country_tanzania', 'country_tonga', 'country_turkey',
+       'country_united kingdom', 'country_united states', 'country_vanuatu',
+       'country_venezuela', 'country_yemen']
 
 path = '../src/scripts/'
 def preprocess(df):
@@ -104,8 +124,11 @@ def preprocess(df):
 
 	data = data.reset_index(drop = True)
 
-	X = pd.get_dummies(data.select_dtypes('object'))
-	data = pd.concat([data.drop('country', axis = 1), X], axis = 1)
-	print(len(data.columns), data.columns)
+	data = data[columns]
+	country = pd.get_dummies(data = data[['country']]).columns[0]
+	X_1 = pd.DataFrame(columns = countries, index = [0])
+	X_1[country] = 1
+	X_1.fillna(0, inplace = True)
+	data = pd.concat([data.drop('country', axis = 1), X_1], axis = 1)
 
 	return data

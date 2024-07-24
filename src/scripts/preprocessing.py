@@ -31,6 +31,7 @@ columns = [
  'num_slides',
  'map_slide_',
  'map_eq_id',
+ 'gdp_per_capita',
  'houses_damages', 
  'human_damages',
 ]
