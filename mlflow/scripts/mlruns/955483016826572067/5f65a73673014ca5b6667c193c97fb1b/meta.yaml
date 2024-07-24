@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/sarahlenet/Desktop/MLOPS/Intro_MLOPS_tsunamis/Intro_MLOPS_tsunamis/mlflow/scripts/mlruns/955483016826572067/5f65a73673014ca5b6667c193c97fb1b/artifacts
+end_time: 1721640311720
+entry_point_name: ''
+experiment_id: '955483016826572067'
+lifecycle_stage: active
+run_id: 5f65a73673014ca5b6667c193c97fb1b
+run_name: tsunamis_n_perplexity_73_n_clusters_8
+run_uuid: 5f65a73673014ca5b6667c193c97fb1b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721640304840
+status: 3
+tags: []
+user_id: sarahlenet

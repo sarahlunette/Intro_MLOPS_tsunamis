@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append('/Users/sarahlenet/Desktop/MLOPS/Intro_MLOPS_tsunamis/Intro_MLOPS_tsunamis/src/scripts/')
 from fastapi import FastAPI
 from predict import predict_record
 from pydantic import BaseModel

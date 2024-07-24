@@ -35,8 +35,8 @@ columns = [
  'human_damages',
 ]
 
-def preprocess(): #ajouter des arguments
-	df = pd.read_csv('Historical_Tsunami_Event_Locations_with_Runups.csv')
+def preprocess(path):
+	df = pd.read_csv(path + 'Historical_Tsunami_Event_Locations_with_Runups.csv')
 	df.columns = df.columns.str.lower()
 
 	gdp_per_capita_dict = {
@@ -78,7 +78,7 @@ def preprocess(): #ajouter des arguments
 	 'cook islands': 'france', 'martinique (french territory)':'france'}
 
 	# We acquire the data and then rename the columns
-	gdp = pd.read_csv('gdp_per_capita.csv', on_bad_lines ='skip', sep = ',')
+	gdp = pd.read_csv(path + 'gdp_per_capita.csv', on_bad_lines ='skip', sep = ',')
 	gdp = gdp[['Country Name', '2022']].rename({'Country Name':'country', '2022':'gdp_per_capita'}, axis = 1)
 
 	# Then we convert all the values to lowercase
@@ -93,7 +93,7 @@ def preprocess(): #ajouter des arguments
 	data = df.merge(gdp, on = 'country', how = 'left')
 
 	# We do the same thing with population
-	population = pd.read_csv('countries-by-population-density-_-countries-by-density-2024.csv')
+	population = pd.read_csv(path + 'countries-by-population-density-_-countries-by-density-2024.csv')
 	population['country'] = population['country'].str.lower()
 	population['country'] = population['country'].replace(dict_replace)
 
@@ -116,7 +116,6 @@ def preprocess(): #ajouter des arguments
 	houses_damages = houses_damages[columns[:-1]].reset_index(drop = True)
 	human_damages = human_damages[columns[:-2]+['human_damages']].reset_index(drop = True)
 
-
 	human_damages = human_damages.sort_values(by='human_damages')[human_damages['human_damages'] < 6000]
 	houses_damages = houses_damages.sort_values(by ='houses_damages')[houses_damages['houses_damages'] < 9000]
 
@@ -126,4 +125,6 @@ def preprocess(): #ajouter des arguments
 
 	X = pd.get_dummies(houses_damages.select_dtypes('object'))
 	houses_damages = pd.concat([houses_damages.drop('country', axis = 1), X], axis = 1)
+	human_damages.to_csv('../../data/processed/human_damages.csv')
+	houses_damages.to_csv('../../data/processed/houses_damages.csv')
 	return human_damages, houses_damages

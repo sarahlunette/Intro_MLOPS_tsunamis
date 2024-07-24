@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append('/Users/sarahlenet/Desktop/MLOPS/Intro_MLOPS_tsunamis/Intro_MLOPS_tsunamis/src/scripts/')
 import pandas as pd
 import numpy as np
 import sklearn
@@ -11,7 +14,8 @@ from mlflow import MlflowClient
 from preprocessing import preprocess
 from scale import scale
 
-path = '' # get the csvs in preprocess(path)
+
+path = '../../data/raw/'
 
 
 # Adding noise for augmentation
@@ -22,9 +26,11 @@ def add_noise(X, noise_level=0.001):
 # predicting the with the output of a tsne
 def predict_tsne(df, i, k):
   tsne = TSNE(n_components=2,perplexity=i + 1, random_state=42)
-  X_tsne = tsne.fit_transform(df)
+  X = df.drop('human_damages', axis = 1)
+  X_tsne = tsne.fit_transform(X)
   km = KMeans(n_clusters= k + 1)
   centroids = km.fit(X_tsne)
+  centroids = km.fit(X_tsn)
   df['clustering'] = pd.Series(km.labels_)
   X = df
   y = y_1
@@ -50,10 +56,10 @@ def predict_tsne(df, i, k):
 
 # experiment on best model with parameters perplexity and n_neigbors (we could also go up 80/90 if number of records went up)
 def run_mlflow_experiment():
-  tsunamis_experiment = mflow.set_experiment('tsunamis_experiment_perplexity_n_neighbors')
+  tsunamis_experiment = mlflow.set_experiment('tsunamis_experiment_perplexity_n_neighbors')
   artifact_path = 'models'
 
-  human_damages, houses_damages = preprocess() #rassembler les deux preprocessing dans un seul fichier
+  human_damages, houses_damages = preprocess(path) #rassembler les deux preprocessing dans un seul fichier
   human_damages_scaled, houses_damages_scaled = scale(human_damages, houses_damages)
 
   score = pd.DataFrame(columns = range(80), index = range(90))
