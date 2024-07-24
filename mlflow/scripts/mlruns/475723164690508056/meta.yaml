@@ -1,0 +1,6 @@
+artifact_location: file:///Users/sarahlenet/Desktop/MLOPS/Intro_MLOPS_tsunamis/Intro_MLOPS_tsunamis/mlflow/scripts/mlruns/475723164690508056
+creation_time: 1721826360121
+experiment_id: '475723164690508056'
+last_update_time: 1721826360121
+lifecycle_stage: active
+name: tsunamis_experiment_perplexity_n_neighbors
