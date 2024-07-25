@@ -62,14 +62,14 @@ def predict_kmeans(df, i, k):
 
 # experiment on best model with parameters perplexity and n_neigbors (we could also go up 80/90 if number of records went up)
 def run_mlflow_experiment():
-  tsunamis_experiment = mlflow.set_experiment('tsunamis_experiment_perplexity_n_neighbors')
+  mlflow.set_tracking_uri('https://dagshub.com/sarahlunette/Intro_MLOPS_tsunamis.mlflow')
   artifact_path = 'models'
 
   human_damages, houses_damages = preprocess(path) #rassembler les deux preprocessing dans un seul fichier
   human_damages_scaled, houses_damages_scaled = scale(human_damages, houses_damages)
 
   run_name = f"tsunamis_n_perplexity_{10}_n_clusters_{10}"
-  dagshub.init('Intro_MLOPS_', 'sarahlunette', mlflow = True)
+  dagshub.init(repo_name = 'Intro_MLOPS_tsunamis', repo_owner = 'sarahlunette', mlflow = True)
   with mlflow.start_run(run_name = run_name) as run:
     human_damages_scaled.dropna(inplace = True)
     km, gbr,r2 = predict_kmeans(human_damages_scaled, 10,10)
