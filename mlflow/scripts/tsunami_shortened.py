@@ -1,3 +1,4 @@
+import dagshub
 import sys
 import os
 sys.path.append('/Users/sarahlenet/Desktop/MLOPS/Intro_MLOPS_tsunamis/Intro_MLOPS_tsunamis/src/scripts/')
@@ -68,6 +69,7 @@ def run_mlflow_experiment():
   human_damages_scaled, houses_damages_scaled = scale(human_damages, houses_damages)
 
   run_name = f"tsunamis_n_perplexity_{10}_n_clusters_{10}"
+  dagshub.init('Intro_MLOPS_', 'sarahlunette', mlflow = True)
   with mlflow.start_run(run_name = run_name) as run:
     human_damages_scaled.dropna(inplace = True)
     km, gbr,r2 = predict_kmeans(human_damages_scaled, 10,10)

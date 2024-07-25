@@ -2,12 +2,13 @@ import sys
 import os
 sys.path.append('/Users/sarahlenet/Desktop/MLOPS/Intro_MLOPS_tsunamis/Intro_MLOPS_tsunamis/src/scripts/')
 from fastapi import FastAPI, HTTPException
-from predict import predict_record
 from pydantic import BaseModel
 import pickle as pkl
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from preprocess_for_app import preprocess
+
+
 
 
 api = FastAPI()
@@ -47,6 +48,7 @@ except FileNotFoundError:
     return transformed_data
 
 '''
+
 class InputData(BaseModel):
   month : int
   day : int
@@ -109,6 +111,11 @@ columns = [
 ]
 
 
+def predict_record(record, model):
+    pred = model.predict(record)
+    return pred
+
+
 @api.post('/predict/')
 async def predict(input_data:InputData):
     data = input_data.dict()
@@ -119,9 +126,9 @@ async def predict(input_data:InputData):
     # Ensure all columns are present, filling missing columns with 0
     record = record.reindex(fill_value=0)
 
-    # Add KMeans for filling clustering column and the rest (save Kmeans and load model)
-    record['clustering'] = 0
-    print(record)
+    '''# Add KMeans for filling clustering column and the rest (save Kmeans and load model)
+                record['clustering'] = 0
+                print(record)'''
 
     try:
         prediction = model.predict(record)
