@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+
+''' TODO: change the credentials and names'''
+# db service
+  db:
+    image: postgres:14
+    container_name: postgres_server
+    restart: always
+    environment:
+      POSTGRES_DB: my_database    # Nom de la base de données
+      POSTGRES_USER: my_user      # Utilisateur
+      POSTGRES_PASSWORD: my_password  # Mot de passe
+    ports:
+      - "5432:5432"  # Redirection du port pour accéder au PostgreSQL depuis l'hôte
+    volumes:
+      - pgdata:/var/lib/postgresql/data  # Volume pour la persistance des données
+
+volumes:
+  pgdata:
+    driver: local
