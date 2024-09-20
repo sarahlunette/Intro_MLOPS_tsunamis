@@ -9,8 +9,6 @@ from sklearn.neighbors import NearestNeighbors
 from preprocess_for_app import preprocess
 
 
-
-
 api = FastAPI()
 
 import pandas as pd
@@ -30,24 +28,6 @@ try:
 except FileNotFoundError:
     raise FileNotFoundError("Model file not found. Please check the file path.")
 
-'''# Load the TSNE
-try:
-    with open('model/tsne.pkl', 'rb') as model_file:
-        tsne_model = pkl.load(model_file)
-except FileNotFoundError:
-    raise FileNotFoundError("Model file not found. Please check the file path.")'''
-
-# X_tsne = np.load('tsne_embeddings.py')
-
-# Function to transform new data based on the saved TSNE model
-'''def transform_new_data(tsne_model, X_tsne, new_data):
-    # Use nearest neighbors to find the closest points in the original space
-    nbrs = NearestNeighbors(n_neighbors=1).fit(tsne_model.embedding_)
-    distances, indices = nbrs.kneighbors(new_data)
-    transformed_data = X_tsne[indices.flatten()]
-    return transformed_data
-
-'''
 
 class InputData(BaseModel):
   month : int

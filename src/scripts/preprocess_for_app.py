@@ -1,6 +1,7 @@
 # import necessary packages
 import pandas as pd
 import numpy as np
+from sklearn.manifold import TSNE
 
 columns = [
  'month',
@@ -54,6 +55,11 @@ countries = ['country_bangladesh', 'country_canada', 'country_chile',
        'country_venezuela', 'country_yemen']
 
 path = '../src/scripts/'
+
+
+processed_origin = pd.read_csv('../../data/processed/human_damages.csv')
+
+
 def preprocess(df):
 	df.columns = df.columns.str.lower()
 
@@ -130,5 +136,14 @@ def preprocess(df):
 	X_1[country] = 1
 	X_1.fillna(0, inplace = True)
 	data = pd.concat([data.drop('country', axis = 1), X_1], axis = 1)
+	
+	X = pd.concat([data, processed_origin], axis = 1).reset_index()
+	tsne = TSNE(n_components=2,perplexity=40, random_state=42)
+	X_tsne = tsne.fit_transform(X, axis = 1)
+
+	data_tsne = X_tsne.iloc[0]
+
+	data['clustering'] = km.predict(data_tsne) # TODO: .values ?
+	## Checker le nombre de variables
 
 	return data

@@ -35,7 +35,6 @@ def predict_tsne(df, i, k):
   # KMeans
   km = KMeans(n_clusters= k + 1)
   centroids = km.fit(X_tsne)
-  centroids = km.fit(X_tsn)
   X['clustering'] = pd.Series(km.labels_)
 
   # Dropping nan values
@@ -71,6 +70,7 @@ def run_mlflow_experiment():
   human_damages_scaled, houses_damages_scaled = scale(human_damages, houses_damages)
 
   score = pd.DataFrame(columns = range(80), index = range(90))
+  mlflow.set_tracking_uri('https://dagshub.com/sarahlunette/Intro_MLOPS_tsunamis.mlflow')
   for k in tqdm(range(2, 90, 1), desc="Outer loop"):
     for i in tqdm(range(80), desc="Inner loop"):
       run_name = f"tsunamis_n_perplexity_{str(i + 1)}_n_clusters_{str(k + 1)}"
