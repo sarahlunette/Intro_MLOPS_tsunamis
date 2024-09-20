@@ -3,7 +3,7 @@ import csv
 import psycopg2
 
 # Database connection parameters
-''' TODO: Make env variables with the database credentials'''
+''' TODO: Make env variables with the database credentials to use in the actual creating scripts'''
 db_config = {
     "host": "your_host",
     "database": "your_dbname",
