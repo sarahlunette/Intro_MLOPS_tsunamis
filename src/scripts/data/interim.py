@@ -1,5 +1,7 @@
 from create_db import insert_data_from_csv, create_connection
 
+csv_file = path
+
 ''' TODO: replace with the right credentials for the interim db'''
 db_config = {
     "host": "your_host",
